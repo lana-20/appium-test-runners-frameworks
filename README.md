@@ -71,12 +71,20 @@ It doesn't need any parameters. Its sole purpose is to hold the logic for our te
 
 Oh my, it failed immediately. And actually, I knew this was going to happen, but I wanted to illustrate what it looks like when a Pytest run fails.
 
-Notice that we don't just get an exception printed out. We get a whole lot of other information as well, including the summary of the test report at the very bottom, where we see that <code>1 test failed in 0.30s</code>. And immediately above that, we have the short description of the error that caused the test to fail:
+<img width="800" src="https://user-images.githubusercontent.com/70295997/225227768-105eb5dd-c910-4f42-8b49-caf6a6e28448.png">
+
+Notice that we don't just get an exception printed out. We get a whole lot of other information as well, including the summary of the test report at the very bottom, where we see that <code>1 test failed in 1.82s</code>. 
+
+<img width="800" src="https://user-images.githubusercontent.com/70295997/225225582-c6e56510-2e98-4ac8-854e-77d544f4689b.png">
+
+And immediately above that, we have the short description of the error that caused the test to fail:
+
+<img width="800" src="https://user-images.githubusercontent.com/70295997/225226737-97fe58a9-79ba-472e-861a-f11d9b1a9d87.png">
 
     Message: An unknown server-side error occurred while processing the command.
     Original error: Bad app:
-    /Users/jlipps/Code/appium-pro/foundations-code/suite/TheApp.app.zip. App paths
-    need to be absolute or an URL to a compressed app
+    /Users/lanabegunova/Desktop/asf/suite/TheApp.app.zip.
+    App paths need to be absolute or an URL to a compressed app
 
 What is this? Somehow Appium thinks my app is bad? Well let me look at the path to it here. Aha! I see what's wrong. I copied and pasted the code from the *other* directory where I had downloaded my mobile app. But now I'm in a *new* directory, and the code hasn't been updated to reflect that. So let's go back to the editor, and make sure that this file can actually find the app correctly. To fix it, I'll just help Python navigate back up a directory, and then down into the <code>mobile</code> directory where the app file is actually located:
 
