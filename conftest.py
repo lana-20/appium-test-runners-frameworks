@@ -1,7 +1,10 @@
+import pytest
+from os import path
+from appium import webdriver
+
 CUR_DIR = path.dirname(path.abspath(__file__))
 APP = path.join(CUR_DIR, '..', 'mobile', 'TheApp.app.zip')
 APPIUM = 'http://localhost:4723'
-
 
 @pytest.fixture
 def driver():
