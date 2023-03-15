@@ -90,8 +90,16 @@ What is this? Somehow Appium thinks my app is bad? Well let me look at the path 
 
     APP = path.join(CUR_DIR, '..', 'mobile', 'TheApp.app.zip')
 
-If you haven't seen this before, the two dots in a path means the parent directory. So here we're telling Python to start at the current directory (which is now the <code>suite directory</code>), go up to the parent, then go into the <code>mobile</code> directory from there, where the app file will be found. Alright, let's try to run the <code>pytest</code> command again with that change. It's taking a lot longer to do something this time, so that's a good sign. Notice how it said that it collected 1 item---that was Pytest doing the hard work of finding our test method. But let me switch over to my simulator, and sure enough, it's doing its thing! And the test is already over. Pytest gives us a nice report that our single test passed, which is also represented by a single green dot.
+If you haven't seen this before, the two dots in a path means the parent directory. So here we're telling Python to start at the current directory (which is now the <code>suite directory</code>), go up to the parent, then go into the <code>mobile</code> directory from there, where the app file will be found. Alright, let's try to run the <code>pytest</code> command again with that change. It's taking a lot longer to do something this time, so that's a good sign. Notice how it said that it collected 1 item---that was Pytest doing the hard work of finding our test method. 
 
+<img width="800" PM" src="https://user-images.githubusercontent.com/70295997/225229846-56ec0f02-f873-43fa-97f0-ee0427f67bbb.png">
+
+But let me switch over to my simulator, and sure enough, it's doing its thing! And the test is already over. Pytest gives us a nice report that our single test passed, which is also represented by a single green dot.
+
+<img width="300" src="https://user-images.githubusercontent.com/70295997/225230653-5da17e49-4bb9-4ec8-aacc-a3c71d5efccb.png">
+                                                                                                                            
+<img width="800" src="https://user-images.githubusercontent.com/70295997/225230825-691f863d-b872-44a6-a8d6-035a5288e501.png">
+                                                                                                                                
 Pytest's philosophy is similar to most other test runners, which is that a passing test is nothing to be remarked on really, so all we get is a little dot for output, whereas a failing test would produce a big red F, making it really easy to see in context. So this is technically all we need to do to get our test running in Pytest. But there are lots of ways we could improve what we've done so far. Let's take a look at the code. One of the things I don't like about all of this is the fact that we have to use this <code>try/finally</code> pattern. It's pretty unsightly and requires a more indentation than seems totally necessary. And in fact we can take advantage of a Pytest feature called Pytest "fixtures" to help here.
 
 Pytest fixtures are basically just functions wrapped with a special annotation so that Pytest knows they are to be treated as fixtures. Fixtures can be used as arguments for test methods, and when they are included in the argument list for a test function, that test has access to whatever the fixture returns. Let's take the first step in this direction by defining a fixture function. Let's call it <code>driver</code>, since the purpose of this fixture is to provide a driver for our test:
@@ -197,7 +205,11 @@ We need Pytest, the path stuff for finding the app, and of course the webdriver 
         saved = driver.find_element(MobileBy.ACCESSIBILITY_ID, 'savedMessage').text
         assert saved == 'Hello'
 
-It's just the test logic and nothing more. But let's make sure this refactor works. So we'll go over to the terminal and run <code>pytest</code> again. Off we go, and it's done. So this is where we are going to end our discussion of runners and frameworks. But before we stop, let's set the stage for some future improvements. One question you might have had is, OK, this works for one version of The App, the iOS version. But what about the Android version? How would we test that here as well? And it is certainly a challenge, because there are many ways to add Android support to this testsuite which would involve a lot of duplication of code, which we'd want to avoid. We might also still not be happy about the readability of this test method. I know I'm not! It's easy for our eyes to get lost in a maze of locator strategies and expected conditions. As a new person coming to this code, it would be a bit difficult to know what it's meant to test, just by reading it, without any help from the test method title itself. And these are all problems we're going to address
+It's just the test logic and nothing more. But let's make sure this refactor works. So we'll go over to the terminal and run <code>pytest</code> again. Off we go, and it's done. 
+
+<img width="800" src="https://user-images.githubusercontent.com/70295997/225231878-3e5e8b74-b7b3-46bd-bccd-e49dac9379ed.png">
+
+So this is where we are going to end our discussion of runners and frameworks. But before we stop, let's set the stage for some future improvements. One question you might have had is, OK, this works for one version of The App, the iOS version. But what about the Android version? How would we test that here as well? And it is certainly a challenge, because there are many ways to add Android support to this testsuite which would involve a lot of duplication of code, which we'd want to avoid. We might also still not be happy about the readability of this test method. I know I'm not! It's easy for our eyes to get lost in a maze of locator strategies and expected conditions. As a new person coming to this code, it would be a bit difficult to know what it's meant to test, just by reading it, without any help from the test method title itself. And these are all problems we're going to address
 
 
 
