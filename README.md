@@ -168,9 +168,9 @@ I notice that I don't have the appropriate imports, so I'll move them over from 
 
 We need Pytest, the path stuff for finding the app, and of course the webdriver module itself. Now if I go back to my test file, it looks much more beautiful and clean.
 
-from appium.webdriver.common.mobileby import MobileBy
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+    from appium.webdriver.common.mobileby import MobileBy
+    from selenium.webdriver.support.wait import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
 
 
     def test_echo_box_displays_message_back(driver):
