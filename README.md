@@ -130,19 +130,66 @@ Now, rather than <code>return</code>ing the driver, we are going to <code>yield<
 
 What we are telling Pytest when we do this is basically, "Hey, Pytest. Give this driver value to whomever is calling this fixture. But then whenever *they're* done with the test, come back here and keep running whatever code is next." So what do we want to do next, after the test is finished? We want to quit the driver! Pytest will make sure to come back to this point and keep running our fixture code whether the test past or failed, and whether there was any exception during the course of the test. This is one of the great things about using a framework like Pytest: we don't have to worry about implementing any of this logic. It's all done for us. So we can simply delete the <code>driver.quit</code> below, and pull it up immediately below the <code>yield</code> statement:
 
+      yield driver
+      driver.quit()
+
+Now, I can get rid of the <code>try</code> and the <code>finally</code>, and dedent all of this code. Wow, this looks so much cleaner! I now have good abstraction and separation of concerns, together with much more readable code. The <code>driver</code> fixture is responsible for starting the session and ending the session cleanly, and the test function is responsible only for running the test itself. We merely have to tell Pytest that our test relies on the <code>driver</code> fixture, and we're good to go! But before we get too excited, let's run it to make sure we didn't break anything.
+
+It appears to be taking some time doing something, which is a good sign because it means a test is probably starting. I'll head over to my simulator, and yep, here we go. Same test logic of course, so nothing new to see, but, it worked, and we got the nice green report from Pytest.
+
+Now there's one more improvement I want us to make right now. At the moment, the Pytest fixture and the test code are in the same file. But we could imagine that we might have many test files for our application. I generally recommend having one test file per feature, so that everything stays organized. My test app has a number of features, so I'd expect to have a number of files for a full-on testsuite. That means that we don't want our <code>driver</code> fixture in any of the test files. It should live somewhere else entirely. But where? Pytest to the rescue! Luckily, Pytest has a convention for where to put things like fixtures, so that they are loaded automatically and made available to all tests.
+
+What we want is to create a new file called <code>conftest.py</code>, right in our <code>suite</code> directory. In this blank file, I'm simply going to cut and paste the fixture we created, along with all of the constant values we define up top:
+
+    CUR_DIR = path.dirname(path.abspath(__file__))
+    APP = path.join(CUR_DIR, '..', 'mobile', 'TheApp.app.zip')
+    APPIUM = 'http://localhost:4723'
 
 
+    @pytest.fixture
+    def driver():
+        caps = {
+            'platformName': 'iOS',
+            'platformVersion': '13.6',
+            'deviceName': 'iPhone 11',
+            'automationName': 'XCUITest',
+            'app': APP,
+        }
+
+        driver = webdriver.Remote(APPIUM, caps)
+        yield driver
+        driver.quit()
+
+I notice that I don't have the appropriate imports, so I'll move them over from the test file as well:
+
+    import pytest
+    from os import path
+    from appium import webdriver
+
+We need Pytest, the path stuff for finding the app, and of course the webdriver module itself. Now if I go back to my test file, it looks much more beautiful and clean.
+
+from appium.webdriver.common.mobileby import MobileBy
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
+    def test_echo_box_displays_message_back(driver):
+        wait = WebDriverWait(driver, 10)
+        wait.until(EC.presence_of_element_located(
+            (MobileBy.ACCESSIBILITY_ID, 'Echo Box'))).click()
+        wait.until(EC.presence_of_element_located(
+            (MobileBy.ACCESSIBILITY_ID, 'messageInput'))).send_keys('Hello')
+        driver.find_element(MobileBy.ACCESSIBILITY_ID, 'messageSaveBtn').click()
+        saved = driver.find_element(MobileBy.ACCESSIBILITY_ID, 'savedMessage').text
+        assert saved == 'Hello'
+        driver.back()
 
+        wait.until(EC.presence_of_element_located(
+            (MobileBy.ACCESSIBILITY_ID, 'Echo Box'))).click()
+        saved = driver.find_element(MobileBy.ACCESSIBILITY_ID, 'savedMessage').text
+        assert saved == 'Hello'
 
-
-
-
-
-
-
-
+It's just the test logic and nothing more. But let's make sure this refactor works. So we'll go over to the terminal and run <code>pytest</code> again. Off we go, and it's done. So this is where we are going to end our discussion of runners and frameworks. But before we stop, let's set the stage for some future improvements. One question you might have had is, OK, this works for one version of The App, the iOS version. But what about the Android version? How would we test that here as well? And it is certainly a challenge, because there are many ways to add Android support to this testsuite which would involve a lot of duplication of code, which we'd want to avoid. We might also still not be happy about the readability of this test method. I know I'm not! It's easy for our eyes to get lost in a maze of locator strategies and expected conditions. As a new person coming to this code, it would be a bit difficult to know what it's meant to test, just by reading it, without any help from the test method title itself. And these are all problems we're going to address
 
 
 
