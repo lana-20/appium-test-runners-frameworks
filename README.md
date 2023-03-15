@@ -139,7 +139,7 @@ It appears to be taking some time doing something, which is a good sign because 
 
 Now there's one more improvement I want us to make right now. At the moment, the Pytest fixture and the test code are in the same file. But we could imagine that we might have many test files for our application. I generally recommend having one test file per feature, so that everything stays organized. My test app has a number of features, so I'd expect to have a number of files for a full-on testsuite. That means that we don't want our <code>driver</code> fixture in any of the test files. It should live somewhere else entirely. But where? Pytest to the rescue! Luckily, Pytest has a convention for where to put things like fixtures, so that they are loaded automatically and made available to all tests.
 
-What we want is to create a new file called <code>conftest.py</code>, right in our <code>suite</code> directory. In this blank file, I'm simply going to cut and paste the fixture we created, along with all of the constant values we define up top:
+What we want is to create a new file called [<code>conftest.py</code>](https://github.com/lana-20/appium-test-runners-frameworks/blob/main/conftest.py), right in our <code>suite</code> directory. In this blank file, I'm simply going to cut and paste the fixture we created, along with all of the constant values we define up top:
 
     CUR_DIR = path.dirname(path.abspath(__file__))
     APP = path.join(CUR_DIR, '..', 'mobile', 'TheApp.app.zip')
@@ -150,8 +150,8 @@ What we want is to create a new file called <code>conftest.py</code>, right in o
     def driver():
         caps = {
             'platformName': 'iOS',
-            'platformVersion': '13.6',
-            'deviceName': 'iPhone 11',
+            'platformVersion': '16.2',
+            'deviceName': 'iPhone 14 Pro',
             'automationName': 'XCUITest',
             'app': APP,
         }
